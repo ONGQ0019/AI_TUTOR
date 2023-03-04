@@ -10,7 +10,7 @@ import streamlit.components.v1 as components
 from streamlit.components.v1 import html
 import re
 # Set up the API key
-openai.api_key = "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"
+openai.api_key = st.secrets["API_KEY"]
 
 
 from math import log10, floor
