@@ -6,6 +6,8 @@ import json
 import warnings
 from streamlit_lottie import st_lottie
 from streamlit_lottie import st_lottie_spinner
+import streamlit.components.v1 as components
+from streamlit.components.v1 import html
 import re
 # Set up the API key
 openai.api_key = "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"
@@ -139,11 +141,25 @@ purpose of the team. '''
     In Paragraph 2, Kien sleeps uneasily. Explain how the language used in this
     paragraph suggests that the environment contributed to Kien’s uneasiness.
     Support your explanations with three details from Paragraph 2."""
+    st.session_state.para1 = para1
+    st.session_state.para2 =para2
+    with st.sidebar:
+        with open('2797-welcome.json', encoding='utf-8', errors='ignore') as f:
+            lottie_load = json.loads(f.read(),strict=False)
+        para_select = st.selectbox("Select Paragraph", ["Para1","Para2"])
+        creative = st.slider('Creativeness', 0.0, 1.0, step=0.1, value = 0.4 , help= 'Higher Number = More creative question and answer')
+        creative = float(creative)
+        if para_select == 'Para1':
+            para = st.session_state.para1
+        elif para_select == 'Para2':
+            para = st.session_state.para2
+        if st.button('Create Questions', key = 23):
+            with st_lottie_spinner(lottie_load,height =200, width = 200):
+                explore(para,creative)
 
     tab1, tab2 = st.tabs(["Paragraph 1", "Paragraph 2"])
 
-    st.session_state.para1 = para1
-    st.session_state.para2 =para2
+
     with tab1: 
         gen2(para1,para1q1, para1q2, 1)
     with tab2: 
@@ -284,19 +300,7 @@ page_names_to_funcs = {
 
 selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
 
-with st.sidebar:
-    with open('2797-welcome.json', encoding='utf-8', errors='ignore') as f:
-        lottie_load = json.loads(f.read(),strict=False)
-    para_select = st.selectbox("Select Paragraph", ["Para1","Para2"])
-    creative = st.slider('Creativeness', 0.0, 1.0, step=0.1, value = 0.4 , help= 'Higher Number = More creative question and answer')
-    creative = float(creative)
-    if para_select == 'Para1':
-        para = st.session_state.para1
-    elif para_select == 'Para2':
-        para = st.session_state.para2
-    if st.button('Create Questions', key = 23):
-        with st_lottie_spinner(lottie_load,height =200, width = 200):
-            explore(para,creative)
+
 
 
 
