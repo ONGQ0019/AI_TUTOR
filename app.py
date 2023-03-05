@@ -194,6 +194,7 @@ def gen2(para, quest, quest2, number):
     st.subheader('Question 2')
 
     st.write(f"{quest2}")
+    final_prompt2 = para + quest2 + extra
 
     student_ans = st.text_input("Your Answer:", key = 10)
     with open('2797-welcome.json', encoding='utf-8', errors='ignore') as f:
@@ -201,7 +202,7 @@ def gen2(para, quest, quest2, number):
 
     if st.button('Generate AI Answer', key = 40):
         with st_lottie_spinner(lottie_load,height =200, width = 200):
-            ai(final_prompt, student_ans)
+            ai(final_prompt2, student_ans)
 
 
 
@@ -281,16 +282,20 @@ def upload():
     # Creating a title and a sidebar
     st.title("Image-to-Text App")
     with st.form("my_form"):
-        st.write("Upload or take a photo")
+        st.write("Upload or manual input")
         tab1, tab2 = st.tabs(["Passage", "Question"])
         with tab1:
             uploaded_file = st.file_uploader("Choose an image file for passage", type=["jpg", "png", "jpeg"])
-            uploaded_file2 = st.camera_input("Take a photo of the passage")
+            uploaded_file2 = st.text_input("Input passage")
+            if uploaded_file is not None and uploaded_file2 is not None:
+                st.info("Detected both upload file and manual input, reverting back to upload file.")
         with tab2:
             uploaded_question = st.file_uploader("Choose an image file for question", type=["jpg", "png", "jpeg"])
-            uploaded_question2 = st.camera_input("Take a photo of the question")
+            uploaded_question2 = st.text_input("Input question")
             student_ans = st.text_input("Your Answer:", key = 88)
-            submitted = st.form_submit_button("Submit")
+            if uploaded_question is not None and uploaded_question2 is not None:
+                st.info("Detected both upload file and manual input, reverting back to upload file.")
+        submitted = st.form_submit_button("Submit")
     reader = easyocr.Reader([st.session_state.language])
     re = ''
     q = ''
@@ -341,30 +346,35 @@ def upload():
 
 
 def imggen(uploaded_file, text, number):
-    reader = easyocr.Reader([st.session_state.language])
-    image = uploaded_file.read()
-    # Converting the image bytes to numpy array
-    image = np.frombuffer(image, dtype=np.uint8)
-    # Decoding the numpy array to an image format
-    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-    # Displaying the uploaded image on the main page
-    #st.image(image, caption="Uploaded Image", use_column_width=True)
-    # Extracting text from the image using easyocr
-    result = reader.readtext(image)
-    # Displaying the extracted text on the main page
-    st.header("Extracted Text")
-    for each in result:
-        text += each[1] + ' '
-    st.write(text)
-    if number == 1:
-        st.session_state.re = text
-    else:
-        st.session_state.q = text
-
+    try:
+        reader = easyocr.Reader([st.session_state.language])
+        image = uploaded_file.read()
+        # Converting the image bytes to numpy array
+        image = np.frombuffer(image, dtype=np.uint8)
+        # Decoding the numpy array to an image format
+        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+        # Displaying the uploaded image on the main page
+        #st.image(image, caption="Uploaded Image", use_column_width=True)
+        # Extracting text from the image using easyocr
+        result = reader.readtext(image)
+        # Displaying the extracted text on the main page
+        st.header("Extracted Text")
+        for each in result:
+            text += each[1] + ' '
+        st.write(text)
+        if number == 1:
+            st.session_state.re = text
+        else:
+            st.session_state.q = text
+    except:
+        if number == 1:
+            st.session_state.re = text
+        else:
+            st.session_state.q = text
 
 page_names_to_funcs = {
-    "Main": main,
-    "Upload": upload   }   
+    "Sample Comprehension": main,
+    "Upload Comprehension": upload   }   
 
 
 selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
