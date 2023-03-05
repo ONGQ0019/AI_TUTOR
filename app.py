@@ -12,7 +12,6 @@ import re
 # Set up the API key
 openai.api_key = st.secrets["API_KEY"]
 
-
 from math import log10, floor
 def round_sig(x, sig=2):
     return round(x, sig-int(floor(log10(abs(x))))-1)
@@ -35,7 +34,6 @@ midnight the rains start again, this time a smooth drizzle, falling silently. Th
 old tarpaulin covering the truck is torn, full of holes, letting the water drip, drip,
 drip through onto the plastic sheets covering the remains of soldiers laid out
 in rows below Kien’s hammock.
-
 The humid atmosphere condenses, its long moist, chilly fingers sliding in and
 around the hammock where Kien lies shivering, half-awake, half-asleep, as
 though drifting along on a stream. He is floating, sadly, endlessly, sometimes
@@ -44,11 +42,9 @@ jungle tracks. Next to the truck, the stream moans, a desperate complaint
 mixing with distant faint jungle sounds, like an echo from another world. The
 eerie sounds come from somewhere in a remote past, arriving softly like
 featherweight leaves falling on the grass of times long, long ago.
-
 Kien knows the area well. It was here, at the end of the dry season of 1969,
 that his 27th Battalion was surrounded and almost totally wiped out. Ten men
 survived from the Lost Battalion after fierce, horrible, barbarous fighting.
-
 That was the dry season when the sun burned harshly, the wind blew
 fiercely, and the enemy sent napalm spraying through the jungle and a sea of
 fire enveloped them, spreading like the fires of hell. Troops in the fragmented
@@ -57,11 +53,9 @@ they went mad, became disoriented, and threw themselves into nets of
 bullets, dying in the flaming inferno. Above them the helicopters flew at
 treetop height and shot them almost one by one, the blood spreading out,
 spraying from their backs, flowing like red mud.
-
 The diamond-shaped grass clearing was piled high with bodies killed by
 helicopter gunships. Broken bodies, bodies blown apart, bodies vaporized.
 No jungle grew again in this clearing. No grass. No plants.
-
 “Better to die than surrender, my brothers! Better to die!” the battalion
 commander yelled insanely; waving his pistol in front of Kien he blew his own
 brains out through his ear. Kien released a silent scream at the sight, while all
@@ -69,7 +63,6 @@ around him, the Americans attacked with submachine guns, sending bullets
 buzzing like deadly bees. Then Kien lowered his machine gun, grasped his 
 side, and fell, rolling slowly down the bank of a shallow stream, hot blood
 trailing down the slope after him.
-
 In the days that followed, crows and eagles darkened the sky. After the
 Americans withdrew, the rainy season came, flooding the jungle floor, turning
 the battlefield into a marsh whose surface water turned rust-coloured from
@@ -84,8 +77,6 @@ and he felt death’s hand on him. After that battle no one mentioned the 27th
 Battalion any more, though numerous souls of ghosts and devils were born in
 that deadly defeat. They were still loose, wandering in every corner and bush
 in the jungle, drifting along the stream, refusing to depart for the Other World.
-
-
 From then on it was called the Jungle of Screaming Souls. Just hearing the
 name whispered was enough to send chills down the spine. Perhaps the
 screaming souls gathered together on special festival days as members of
@@ -93,7 +84,6 @@ the Lost Battalion, lining up in the little diamond-shaped clearing, checking
 their ranks and numbers. The sobbing whispers were heard deep in the
 jungle at night, the howls carried on the wind. Perhaps they really were the
 voices of the wandering souls of dead soldiers.
-
 Here, when it is dark, trees and plants moan in awful harmony. When the
 ghostly music begins it unhinges the soul and the entire wood looks the same
 no matter where you are standing. Not a place for the timid. Living here one
@@ -102,8 +92,6 @@ of 1974, when the regiment was sent back to this area, Kien and his scout
 squad established an altar and prayed before it in secret, honouring and
 recalling the wandering souls from the 27th Battalion still in the Jungle of
 Screaming Souls
-
-
         """)
     para1 = '''
     Travelling along the banks of the Ya Crong Poco river, on the northern flank
@@ -176,8 +164,8 @@ def gen(para, quest, number):
     st.subheader('Question 1')
     st.write(f"{quest}")
 
-    student_ans = st.text_input("Your Answer:", key = number)
-    if st.button('Generate AI Answer', key = number):
+    student_ans = st.text_input("Your Answer:", key = 88)
+    if st.button('Generate AI Answer', key = 67):
         with open('2797-welcome.json', encoding='utf-8', errors='ignore') as f:
             lottie_load = json.loads(f.read(),strict=False)
         with st_lottie_spinner(lottie_load,height =200, width = 200):
@@ -195,9 +183,9 @@ def gen2(para, quest, quest2, number):
     st.subheader('Question 1')
     st.write(f"{quest}")
 
-    student_ans = st.text_input("Your Answer:", key = number)
+    student_ans = st.text_input("Your Answer:", key = 32)
 
-    if st.button('Generate AI Answer', key = number):
+    if st.button('Generate AI Answer', key = 33):
         with open('2797-welcome.json', encoding='utf-8', errors='ignore') as f:
             lottie_load = json.loads(f.read(),strict=False)
         with st_lottie_spinner(lottie_load,height =200, width = 200):
@@ -211,7 +199,7 @@ def gen2(para, quest, quest2, number):
     with open('2797-welcome.json', encoding='utf-8', errors='ignore') as f:
         lottie_load = json.loads(f.read(),strict=False)
 
-    if st.button('Generate AI Answer', key = 10):
+    if st.button('Generate AI Answer', key = 40):
         with st_lottie_spinner(lottie_load,height =200, width = 200):
             ai(final_prompt, student_ans)
 
@@ -285,17 +273,98 @@ def ai(final_prompt,student_ans):
             st.write(f"Total Stars: {star}")
         st.markdown(compare)
 
+import easyocr
+import cv2
+import numpy as np
+def upload():
+    st.session_state.language = st.sidebar.selectbox("Select language", ["en", "chi"])
+    # Creating a title and a sidebar
+    st.title("Image-to-Text App")
+    with st.form("my_form"):
+        st.write("Upload or take a photo")
+        tab1, tab2 = st.tabs(["Passage", "Question"])
+        with tab1:
+            uploaded_file = st.file_uploader("Choose an image file for passage", type=["jpg", "png", "jpeg"])
+            uploaded_file2 = st.camera_input("Take a photo of the passage")
+        with tab2:
+            uploaded_question = st.file_uploader("Choose an image file for question", type=["jpg", "png", "jpeg"])
+            uploaded_question2 = st.camera_input("Take a photo of the question")
+            student_ans = st.text_input("Your Answer:", key = 88)
+            submitted = st.form_submit_button("Submit")
+    reader = easyocr.Reader([st.session_state.language])
+    re = ''
+    q = ''
+    st.session_state.re = None
+    st.session_state.q = None
+    if submitted:
+        st.success("Submitted")
+        if uploaded_file is not None:
+            imggen(uploaded_file, re,1)
+        elif uploaded_file is None and uploaded_file2 is not None:
+            imggen(uploaded_file2, re,1)
+        elif uploaded_file is not None and uploaded_file2 is not None:
+            imggen(uploaded_file, re,1)
+        else:
+            st.error('No image of passage found')
+        
+        if uploaded_question is not None:
+            imggen(uploaded_question, re,2)
+        elif uploaded_question is None and uploaded_question2 is not None:
+            imggen(uploaded_question2, re,2)
+        elif uploaded_question is not None and uploaded_question2 is not None:
+            imggen(uploaded_question, re,2)
+        else:
+            st.error('No image of question found')
+
+        extra = '''
+        Add ** in front and behind of the top few keywords that are important. Do not do this for all the words or for concurrent words'''
+        try:
+            final_prompt = st.session_state.re + st.session_state.q  + extra
+        except:
+            if st.session_state.re is None:
+                st.session_state.re = "Marry had a little Lamb. The lamb is white."
+            elif st.session_state.q is None:
+                st.session_state.q = "What is an interesting question here?"
+            final_prompt = st.session_state.re + st.session_state.q  + extra
+
+        if student_ans is None:
+            student_ans = "I dont know leh :("
+
+
+        #st.info(final_prompt)
+        with open('2797-welcome.json', encoding='utf-8', errors='ignore') as f:
+            lottie_load = json.loads(f.read(),strict=False)
+        with st_lottie_spinner(lottie_load,height =200, width = 200):
+            ai(final_prompt, student_ans)
 
 
 
 
-
-
-
+def imggen(uploaded_file, text, number):
+    reader = easyocr.Reader([st.session_state.language])
+    image = uploaded_file.read()
+    # Converting the image bytes to numpy array
+    image = np.frombuffer(image, dtype=np.uint8)
+    # Decoding the numpy array to an image format
+    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+    # Displaying the uploaded image on the main page
+    #st.image(image, caption="Uploaded Image", use_column_width=True)
+    # Extracting text from the image using easyocr
+    result = reader.readtext(image)
+    # Displaying the extracted text on the main page
+    st.header("Extracted Text")
+    for each in result:
+        text += each[1] + ' '
+    st.write(text)
+    if number == 1:
+        st.session_state.re = text
+    else:
+        st.session_state.q = text
 
 
 page_names_to_funcs = {
-    "Main": main   }   
+    "Main": main,
+    "Upload": upload   }   
 
 
 selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
