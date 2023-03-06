@@ -381,14 +381,107 @@ def imggen(uploaded_file, text, number):
         else:
             st.session_state.q = text
 
+
+def qa():
+    from streamlit_chat import message
+
+
+    def generate_response(prompt):
+        #st.session_state.subject = 'Physics'
+        #st.session_state.subject = st.sidebar.selectbox('Subject:', ['Physics','Biology','Chemistry'])
+
+        try:
+            chat_completion = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    # System message first, it helps set the behavior of the assistant
+                    {"role": "system", "content": f"""You are a secondary 4 Singapore English tutor. You are capable of answering any vocabulary, grammar or sentence structure questions. You are able to generate essays and help me brainstorm of ideas. You are capable of giving me helpful study tips on 
+                    matters asked. You are able to answer any english comprehension question. You are also an excellent English translator. Remember to break your reply into paragraphs if it is too long. Keep your intro short and concise.
+                    """},
+                    # User message
+                    {"role": "user", "content": f"""My response was: {st.session_state.input_text}"""},
+                    {"role": "assistant", "content": f"""This was your previous question/prompt: {st.session_state.insertion}. THIS IS NOT MY RESPONSE. THIS IS YOURS so do not use it as my response. """}
+                    ], temperature= 0.4
+            )
+            message = str(chat_completion.choices[0].message['content'])
+            st.session_state.insertion = message
+            #st.sidebar.write("hi2")
+        except:
+            chat_completion = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    # System message first, it helps set the behavior of the assistant
+                    {"role": "system", "content":f"""You are a secondary 4 Singapore English tutor. You are capable of answering any vocabulary, grammar or sentence structure questions. You are able to generate essays and help me brainstorm of ideas. You are capable of giving me helpful study tips on 
+                    matters asked. You are able to answer any english comprehension question. You are also an excellent English translator. Remember to break your reply into paragraphs if it is too long. Keep your intro short and concise.
+                        """},
+                    {"role": "user", "content": prompt + ' keep your intro short and concise'}], temperature= 0.4
+            )
+            message = str(chat_completion.choices[0].message['content'])
+            #st.sidebar.write("hi1")
+            st.session_state.insertion = message
+        return message
+    st.title(f"English Chatbot")
+
+
+
+    # Storing the chat
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = []
+
+    if 'past' not in st.session_state:
+        st.session_state['past'] = []
+
+
+    # We will get the user's input by calling the get_text function
+    def get_text():
+        
+        st.session_state.input_text = None
+        input_text = st.text_input("You: ","Hello, tell me what you are and what you are here for.", key="input")
+        st.session_state.input_text = input_text
+        return input_text
+
+
+
+
+    user_input = get_text()
+
+    if user_input:
+        with open('2797-welcome.json', encoding='utf-8', errors='ignore') as f:
+            lottie_load = json.loads(f.read(),strict=False)
+        with st_lottie_spinner(lottie_load,height =200, width = 200):
+            output = generate_response(user_input)
+        # store the output 
+            st.session_state.past.append(user_input)
+            st.session_state.generated.append(output)    
+
+    if st.session_state['generated']:
+        
+        for i in range(len(st.session_state['generated'])-1, -1, -1):
+            message(st.session_state["generated"][i], key=str(i))
+            message(st.session_state['past'][i], is_user=True, key=str(i) + '_user',  avatar_style="adventurer")
+
+    if st.sidebar.button('reset'):
+        st.snow()
+        for key in st.session_state.keys():
+            del st.session_state[key]
+        st.experimental_rerun()
+
+
+
+
+
+
+
+
+
+
 page_names_to_funcs = {
     "Sample Comprehension": main,
-    "Upload Comprehension": upload   }   
+    "Upload Comprehension": upload,
+    "Chatbot": qa   }   
 
 
 selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
-
-
 
 
 
